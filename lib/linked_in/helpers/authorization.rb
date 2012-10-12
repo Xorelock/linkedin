@@ -53,13 +53,15 @@ module LinkedIn
         end
 
         def full_oauth_url_for(url_type, host_type)
-          if @consumer_options["#{url_type}_url".to_sym]
+          url = if @consumer_options["#{url_type}_url".to_sym]
             @consumer_options["#{url_type}_url".to_sym]
           else
             host = @consumer_options[:site] || @consumer_options[host_type] || DEFAULT_OAUTH_OPTIONS[host_type]
             path = @consumer_options[:"#{url_type}_path".to_sym] || DEFAULT_OAUTH_OPTIONS["#{url_type}_path".to_sym]
             "#{host}#{path}"
           end
+          url = (url + "?scope=" + @consumer_options[:scope]) if (@consumer_options[:scope] && url_type == :request_token)
+          url
         end
 
     end
