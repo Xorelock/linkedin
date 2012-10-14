@@ -8,6 +8,11 @@ module LinkedIn
         simple_query(path, options)
       end
 
+      def email(options={})
+        path = "#{person_path(options)}/email-address"
+        simple_query(path, options.merge(:raw => true)).split('"')[1]
+      end
+
       def connections(options={})
         path = "#{person_path(options)}/connections"
         simple_query(path, options)
@@ -58,7 +63,12 @@ module LinkedIn
           params  = options.map { |k,v| "#{k}=#{v}" }.join("&")
           path   += "?#{params}" if not params.empty?
 
-          Mash.from_json(get(path, headers))
+          if options.delete(:raw)
+            get(path, headers)
+          else
+            Mash.from_json(get(path, headers))
+          end
+
         end
 
         def person_path(options)
